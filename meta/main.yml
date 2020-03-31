@@ -1,0 +1,28 @@
+---
+dependencies: []
+
+galaxy_info:
+  author: exsketrix
+  description: OpenShift App Deployer
+  min_ansible_version: 2.4
+  platforms:
+    - name: EL
+      versions:
+        - 6
+        - 7
+    - name: Fedora
+      versions:
+        - all
+    - name: Debian
+      versions:
+        - all
+    - name: Ubuntu
+      versions:
+        - all
+    - name: Archlinux
+      versions:
+        - all
+  galaxy_tags:
+    - openshift
+    - development
+    - web

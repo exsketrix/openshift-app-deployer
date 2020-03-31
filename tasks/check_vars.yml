@@ -1,0 +1,25 @@
+# Check whether mandatory variables are populated
+
+- fail: msg="The variable 'openshift_app_deployer_files_resource_path' is not defined or empty. This variable should point to the directory containing the set of non-template OpenShift resource files."
+  when: (openshift_app_deployer_files_resource_path is not defined) or (openshift_app_deployer_files_resource_path|length == 0)
+
+- fail: msg="The variable 'openshift_app_deployer_templates_resource_path' is not defined or empty. This variable should point to the directory containing the set of jinja template OpenShift resource files."
+  when: (openshift_app_deployer_templates_resource_path is not defined) or (openshift_app_deployer_templates_resource_path|length == 0)
+
+- fail: msg="The variable 'openshift_app_deployer_url' is not defined or empty. This variable is the URL for accessing Openshift e.g. https://console.openshift.bizchat.io:8443"
+  when: (openshift_app_deployer_url is not defined) or (openshift_app_deployer_url|length == 0)
+
+- fail: msg="The variable 'openshift_app_deployer_user_name' is not defined or empty. This variable is the username of the user authenticating into OpenShift. Either openshift_app_deployer_user_name and openshift_app_deployer_user_passwd should be populated or openshift_app_deployer_token."
+  when: ((openshift_app_deployer_user_name is not defined) or (openshift_app_deployer_user_name|length == 0)) and ((openshift_app_deployer_token is not defined) or (openshift_app_deployer_token|length == 0))
+
+- fail: msg="The variable 'openshift_app_deployer_user_passwd' is not defined or empty. This variable is the password of the user authenticating into OpenShift. This should be stored in an encrypted Ansible vault file. Either openshift_app_deployer_user_name and openshift_app_deployer_user_passwd should be populated or openshift_app_deployer_token."
+  when: ((openshift_app_deployer_user_passwd is not defined) or (openshift_app_deployer_user_passwd|length == 0)) and ((openshift_app_deployer_token is not defined) or (openshift_app_deployer_token|length == 0))
+
+- fail: msg="The variable 'openshift_app_deployer_token' is not defined or empty. This variable is the token used for authenticating into OpenShift. Either openshift_app_deployer_user_name and openshift_app_deployer_user_passwd should be populated or openshift_app_deployer_token."
+  when: ((openshift_app_deployer_token is not defined) or (openshift_app_deployer_token|length == 0)) and ((openshift_app_deployer_user_passwd is not defined) or (openshift_app_deployer_user_passwd|length == 0))
+
+- fail: msg="The variable 'openshift_app_deployer_project' is not defined or empty. This variable is the OpenShift project name that the app should be deployed to"
+  when: (openshift_app_deployer_project is not defined) or (openshift_app_deployer_project|length == 0)
+
+- fail: msg="The variable 'openshift_app_deployer_resources' is not defined or empty. This variable holds a list of the OpenShift resource filenames to deploy to OpenShift. The list needs to be carefully ordered so that any resource files dependent on others should be listed after (under) all its dependents."
+  when: (openshift_app_deployer_resources is not defined) or (openshift_app_deployer_resources|length == 0)

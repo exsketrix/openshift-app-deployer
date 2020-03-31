@@ -1,0 +1,10 @@
+#!/bin/sh
+
+declare -a resources=({{os_files}})
+
+oc login {{openshift_app_deployer_url}} --token {{openshift_app_deployer_token}} -n {{openshift_app_deployer_project}} --insecure-skip-tls-verify
+
+for i in "${resources[@]}"
+do
+	oc apply -f /openshift_resources/$i
+done

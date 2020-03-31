@@ -1,0 +1,3 @@
+#!/bin/sh
+
+oc login {{openshift_app_deployer_url}} --username={{openshift_app_deployer_user_name}} --password={{openshift_app_deployer_user_passwd}} --insecure-skip-tls-verify && oc whoami -t

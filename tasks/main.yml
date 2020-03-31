@@ -1,0 +1,79 @@
+- name: Check all mandatory variables have been populated
+  include: check_vars.yml
+
+
+- block:
+  - name: Process template script to obtain user creds
+    template:
+      src: oc_get_token.sh.j2
+      dest: ./oc_get_token.sh
+      mode: 0755
+
+  - name: Obtain access token for OpenShift User
+    docker_container:
+      name: oc-cli
+      image: openshift/origin-cli
+      detach: false
+      recreate: true
+      volumes:
+        - "{{playbook_dir}}:/scripts:ro"
+      command: 
+        - /scripts/oc_get_token.sh
+    register: docker_output
+
+  - name: Remove tmp script for obtaining token
+    file:
+      path: oc_get_token.sh
+      state: absent
+
+  - name: Extract and store token
+    set_fact:
+      openshift_app_deployer_token: "{{docker_output.ansible_facts.docker_container.Output | regex_replace('\\n', ' ') | regex_replace(\"'|\\.|:|\\!\", '') | regex_replace('.*started(.*)', '\\1') | trim}}"
+
+  when: (openshift_app_deployer_token is not defined) or (openshift_app_deployer_token|length == 0)
+
+
+- name: Create directory to hold openshift resources
+  file:
+    path: openshift_resources
+    state: directory
+
+- name: Create concatenated list of os resources
+  set_fact:
+    os_files: "{{ openshift_app_deployer_resources | map('regex_replace', '^(.*)$', '\"\\1\"') | join(' ') }}"
+
+- name: Process template script to deploy resources to openshift
+  template:
+    src: deploy_os.sh.j2
+    dest: "{{playbook_dir}}/openshift_resources/deploy_os.sh"
+    mode: 0755
+
+- name: Place all files into openshift_resources directory
+  copy: 
+    src: "{{item}}"
+    dest: "{{playbook_dir}}/openshift_resources/{{item | basename}}"
+  with_fileglob: "{{ lookup('fileglob', '{{openshift_app_deployer_files_resource_path}}/*').split(',')}}"
+
+- name: Place all templates into openshift_resources directory
+  template:
+    src: "{{item}}"
+    dest: "{{playbook_dir}}/openshift_resources/{{item | regex_replace('\\.j2', '') | basename}}"
+    mode: 0755
+  with_fileglob: "{{ lookup('fileglob', '{{openshift_app_deployer_templates_resource_path}}/*').split(',')}}"
+
+- name: Deploy Openshift Resources
+  docker_container:
+    name: oc-cli
+    image: openshift/origin-cli
+    detach: false
+    recreate: true
+    volumes:
+      - "{{playbook_dir}}/openshift_resources:/openshift_resources:ro"
+    command: 
+      - /openshift_resources/deploy_os.sh
+  register: docker_output
+
+- name: Remove temporary dir containing OpenShift Resources
+  file:
+    path: "{{playbook_dir}}/openshift_resources"
+    state: absent
