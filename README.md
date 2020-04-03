@@ -24,7 +24,7 @@ Requirements to run this Ansible role:
 
 ## Variables
 
-This role performs validation to check that all mandatory variables are populated. The following table lists each variable that can be set for this role 
+This role performs validation to check that all mandatory variables are populated. The following table lists each variable that can be set for this role:
 
 | Variable Name                                   |  Required | Example Value                                              |
 | ----------------------------------------------- | --------- | ---------------------------------------------------------- |
