@@ -38,3 +38,14 @@ This role performs validation to check that all mandatory variables are populate
 | openshift_app_deployer_resources                | Y         | <p>- myapp_imagestream.yml<br>- myapp_service.yml</p>      |
 
 `*` Either openshift_app_deployer_user_name and openshift_app_deployer_user_passwd are required or openshift_app_deployer_token if you have an access token
+
+## Installation into Ansible Playbook
+
+Create/Edit requirements yml file in playbook, adding the following dependency:
+
+```yaml
+- src: git@github.com:exsketrix/openshift-app-deployer.git
+  scm: git
+  version: master
+  name: openshift-app-deployer
+```
